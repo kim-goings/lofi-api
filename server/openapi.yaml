@@ -1,0 +1,121 @@
+openapi: 3.0.0
+info:
+  title: LOFI API
+  version: 1.0.0-beta
+  description: API for viewing products in the LOFI application.
+  contact:
+    name: Kim Goings
+    email: kim@c4cats.org
+paths:
+  /products:
+    get:
+      operationId: getProducts
+      summary: Returns a list of products, sorted by title.
+      description: Retrieves a paginated list of products available in the LOFI application.
+      tags:
+        - Products
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 10
+          description: Maximum number of products to return (max 250)
+        - in: query
+          name: cursor
+          required: false
+          schema:
+            type: string
+          description: Cursor for pagination
+      responses:
+        "200": 
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        price:
+                          type: number
+                        inventory:
+                          type: integer
+                        created_at:
+                          type: string
+                          format: date-time
+                  next_cursor:
+                    type: string    
+
+  /products/{productId}:
+    get:
+      operationId: getProductById
+      summary: Get a product by its ID.
+      description: Retrieves detailed information about a specific product using its unique identifier.
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+          description: The ID of the product to retrieve
+      responses:
+        "200":
+          description: A product object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  title:
+                    type: string
+                  price:
+                    type: number
+                  inventory:
+                    type: integer
+                  created_at:
+                    type: string
+                    format: date-time
+
+  /api-stats:
+    get:
+      operationId: getStats
+      summary: Get API usage statistics.
+      description: Retrieves statistics about API usage.
+      tags:
+        - Metrics 
+      responses:
+        "200":
+          description: API usage statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  endpoint_response_times_ms:
+                    type: object
+                    properties:
+                      average: 
+                        type: integer
+                      max:
+                        type: integer
+                      min:
+                        type: integer
+                  total_endpoint_calls:
+                    type: integer
+                  average_shopify_response_time_ms:
+                    type: integer
+                  total_shopify_api_calls:
+                    type: integer
